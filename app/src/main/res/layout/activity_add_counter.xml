@@ -25,16 +25,25 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="77dp" />
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="is a common counter? (check only if storing a single value for the couple)"
+        android:id="@+id/checkCommon"
+        android:layout_below="@+id/editCounterName"
+        android:layout_marginTop="20dp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Initial values (optional)"
-        android:textColor="#646464"
+        android:textColor="#FFBFDF"
         android:id="@+id/textView"
-        android:layout_below="@+id/editCounterName"
+        android:layout_below="@+id/checkCommon"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp" />
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -95,5 +104,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:onClick="registerCounter"/>
+
 
 </RelativeLayout>

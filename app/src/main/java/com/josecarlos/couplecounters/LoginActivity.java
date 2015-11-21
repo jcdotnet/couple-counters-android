@@ -59,7 +59,7 @@ public class LoginActivity extends Activity {
         final String partner1 = Utils.checkParameter(textLogin1.getText().toString());
         final String partner2 = Utils.checkParameter(textLogin2.getText().toString());
 
-        if(isNotNull(partner1) && isNotNull(partner2)){
+        if(Utils.isNotNull(partner1) && Utils.isNotNull(partner2)){
 
             RequestParams params = new RequestParams();
             AsyncHttpClient client = new AsyncHttpClient();
@@ -72,13 +72,15 @@ public class LoginActivity extends Activity {
                     Log.i("CC", "Login successful, navigating to MainActivity");
 
                     String name1 = null, name2 = null;
-                    String[] counters = new String [response.length()];
+                    String[] countersName = new String [response.length()];
+                    String[] countersType = new String [response.length()];
                     for (int i=0; i < response.length(); i++) {
                         try {
                             JSONObject jObject = response.getJSONObject(i);
                             name1 = jObject.getString("partner1");
                             name2 = jObject.getString("partner2");
-                            counters[i] = jObject.getString("counter");
+                            countersName[i] = jObject.getString("counter");
+                            countersType[i] = jObject.getString("common");
                         } catch (JSONException e) {
                             Log.e("CC", e.getMessage());
                         }
@@ -89,7 +91,8 @@ public class LoginActivity extends Activity {
                     data.putExtra("partner2", partner2);
                     data.putExtra("name1", name1);
                     data.putExtra("name2", name2);
-                    data.putExtra("counters", counters);
+                    data.putExtra("countersName", countersName);
+                    data.putExtra("countersType", countersType);
                     setResult(RESULT_OK, data);
                     finish();
                 }
@@ -101,11 +104,13 @@ public class LoginActivity extends Activity {
                     Log.i("CC", "Login successful, navigating to MainActivity");
 
                     String name1 = null, name2 = null;
-                    String[] counters = new String[1];
+                    String[] countersName = new String[1];
+                    String[] countersType = new String[1];
                     try {
                         name1 = response.getString("partner1");
                         name2 = response.getString("partner2");
-                        counters[0] = response.getString("counter");
+                        countersName[0] = response.getString("counter");
+                        countersType[0] = response.getString("common");
                     } catch (JSONException e) {
                         Log.e("CC", e.getMessage());
                     }
@@ -115,7 +120,8 @@ public class LoginActivity extends Activity {
                     data.putExtra("partner2", partner2);
                     data.putExtra("name1", name1);
                     data.putExtra("name2", name2);
-                    data.putExtra("counters", counters);
+                    data.putExtra("countersName", countersName);
+                    data.putExtra("countersType", countersType);
                     setResult(RESULT_OK, data);
                     finish();
                 }
@@ -140,10 +146,6 @@ public class LoginActivity extends Activity {
         Intent loginIntent = new Intent(getApplicationContext(),RegisterActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(loginIntent);
-    }
-
-    private boolean isNotNull(String txt){
-        return txt!=null && txt.trim().length()>0 ? true: false;
     }
 
 }

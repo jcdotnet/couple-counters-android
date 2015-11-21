@@ -39,7 +39,7 @@ import cz.msebera.android.httpclient.Header;
 public class CounterActivity extends Activity {
 
     private String oldCounterName;
-    private boolean rename;
+    private boolean rename, isCommon;
     private EditText counterName;
     private ImageView image1, image2;
     private TextView value1, value2, textName1, textName2;
@@ -49,6 +49,8 @@ public class CounterActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_counter);
+
+        isCommon = getIntent().getExtras().getBoolean("common");
 
         counterName = (EditText) findViewById(R.id.textCounter);
         value1 = (TextView) findViewById(R.id.textValue1);
@@ -119,6 +121,8 @@ public class CounterActivity extends Activity {
     public void buttonInc1Click(View view) {
         int value = Integer.parseInt(value1.getText().toString());
         value1.setText(Integer.toString(++value));
+        if (isCommon)
+            value2.setText(Integer.toString(value));
         rename = false;
         updateCounter();
     }
@@ -128,6 +132,8 @@ public class CounterActivity extends Activity {
         if (value > 0)
         {
             value1.setText(Integer.toString(--value));
+            if (isCommon)
+                value2.setText(Integer.toString(value));
             rename = false;
             updateCounter();
         }
@@ -136,6 +142,8 @@ public class CounterActivity extends Activity {
     public void buttonInc2Click(View view) {
         int value = Integer.parseInt(value2.getText().toString());
         value2.setText(Integer.toString(++value));
+        if (isCommon)
+            value1.setText(Integer.toString(value));
         rename = false;
         updateCounter();
     }
@@ -145,6 +153,8 @@ public class CounterActivity extends Activity {
         if (value > 0)
         {
             value2.setText(Integer.toString(--value));
+            if (isCommon)
+                value1.setText(Integer.toString(value));
             rename = false;
             updateCounter();
         }
@@ -167,7 +177,12 @@ public class CounterActivity extends Activity {
         AsyncHttpClient client = new AsyncHttpClient();
         String url = null;
         if (rename) {
-            url = "http://josecarlosroman.com/counters/" + partner1 + "/" + partner2 + "/" + oc + "/" + c;
+            if (Utils.isNotNull(c))
+                url = "http://josecarlosroman.com/counters/" + partner1 + "/" + partner2 + "/" + oc + "/" + c;
+            else {
+                Toast.makeText(getApplicationContext(), "Please enter a counter name", Toast.LENGTH_LONG).show();
+                return;
+            }
         } else {
             url = "http://josecarlosroman.com/counters/" + partner1 + "/" + partner2 + "/" + oc + "/" + oc + "/" + v1 + "/" + v2;
         }
@@ -192,8 +207,5 @@ public class CounterActivity extends Activity {
 
         });
     }
-
-
-
 
 }

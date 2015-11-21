@@ -15,6 +15,7 @@
 
 package com.josecarlos.couplecounters;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -22,9 +23,16 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by Jose Carlos on 13/11/2015.
@@ -55,6 +63,30 @@ public class Utils {
 
         canvas.drawText(text.substring(0, letters).toUpperCase(), x, y, myPaint);
         image.setImageBitmap(img);
+    }
+
+    public static void setCounterType(String partner1, String partner2, String counter, String type)
+    {
+        RequestParams params = new RequestParams();
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.put("http://josecarlosroman.com/counters/" + partner1 + "/" + partner2 + "/" + counter + "/" + counter + "/" + type, params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.i("CC", "Entered onSuccess, counter type changed, http status code: " + statusCode);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.i("CC", "Entered onFailure, counter type not created, http status code: " + statusCode);
+            }
+
+        });
+    }
+
+    public static boolean isNotNull(String txt){
+        return txt!=null && txt.trim().length()>0 ? true: false;
     }
 
     public static String checkParameter(String parameter)

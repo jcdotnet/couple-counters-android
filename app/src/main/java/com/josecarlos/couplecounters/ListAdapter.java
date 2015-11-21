@@ -1,6 +1,8 @@
 package com.josecarlos.couplecounters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +22,8 @@ import java.util.List;
  */
 public class ListAdapter extends BaseAdapter {
 
-	// private final List<CounterItem> items = new ArrayList<CounterItem>();
-	private final List<String> items = new ArrayList<String>();
+	private final List<CounterItem> items = new ArrayList<CounterItem>();
+	//private final List<String> items = new ArrayList<String>();
     private final Context context;
 
     public ListAdapter(Context context)
@@ -29,13 +31,13 @@ public class ListAdapter extends BaseAdapter {
         this.context = context;
     }
 
-    public void add(String item)
+    public void add(CounterItem item)
     {
         this.items.add(item);
         notifyDataSetChanged();
     }
 
-    public void remove(String item)
+    public void remove(CounterItem item)
     {
         this.items.remove(item);
         notifyDataSetChanged();
@@ -47,7 +49,7 @@ public class ListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void set(int pos, String item)
+    public void set(int pos, CounterItem item)
     {
         this.items.set(pos, item);
         notifyDataSetChanged();
@@ -59,7 +61,7 @@ public class ListAdapter extends BaseAdapter {
     }
 
     @Override
-	public String getItem(int position) {
+	public CounterItem getItem(int position) {
         return this.items.get(position);
     }
 
@@ -71,7 +73,7 @@ public class ListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-		final String item  = (String) getItem(position);
+		final CounterItem item  = getItem(position);
 		LinearLayout itemLayout = (LinearLayout)convertView;
 		if (itemLayout==null)
 		{
@@ -80,10 +82,11 @@ public class ListAdapter extends BaseAdapter {
 		}
 
         final ImageView imageView = (ImageView) itemLayout.findViewById(R.id.counter_pic);
-        Utils.setInitial(imageView, item, 1);
+        Utils.setInitial(imageView, item.getCounterName(), 1);
 
 		final TextView titleView = (TextView) itemLayout.findViewById(R.id.counter_text);
-		titleView.setText(item);
+        //titleView.setTextColor(item.isCommon()?Color.parseColor("#FFBFDF"):Color.parseColor("#000000"));
+        titleView.setText(item.getCounterName());
 
 		return itemLayout;
     }

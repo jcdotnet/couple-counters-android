@@ -86,7 +86,8 @@ public class MainActivity extends ListActivity {
                 intent.putExtra("partner2", currentPartner2);
                 intent.putExtra("name1", namePartner1);
                 intent.putExtra("name2", namePartner2);
-                intent.putExtra("counter", listAdapter.getItem(position));
+                intent.putExtra("counter", listAdapter.getItem(position).getCounterName());
+                intent.putExtra("common", listAdapter.getItem(position).isCommon());
                 startActivityForResult(intent, EDIT_REQUEST);
             }
         });
@@ -120,22 +121,24 @@ public class MainActivity extends ListActivity {
             namePartner1 = data.getStringExtra("name1");
             namePartner2 = data.getStringExtra("name2");
             Log.i("CC", currentPartner1 + " " + currentPartner2);
-            String[] counters = data.getStringArrayExtra("counters");
-            for (String counter:counters)
+            String[] countersName = data.getStringArrayExtra("countersName");
+            String[] countersType = data.getStringArrayExtra("countersType");
+            for (int i=0; i< countersName.length; i++)
             {
-                Log.i("CC", counter);
-                listAdapter.add(counter);
+                Log.i("CC", countersName[i]);
+                listAdapter.add(new CounterItem(countersName[i], "1".equals(countersType[i])));
             }
         }
         else if (requestCode == COUNTER_REQUEST && resultCode == RESULT_OK) {
             String newCounter = data.getStringExtra("counter");
-            listAdapter.add(newCounter);
+            String commonCounter= data.getStringExtra("common");
+            listAdapter.add(new CounterItem(newCounter, "1".equals(commonCounter)));
         }
 
         else if (requestCode == EDIT_REQUEST && resultCode == RESULT_OK) {
-            String newCounter = data.getStringExtra("counter");
-            listAdapter.set(currentCounter, newCounter);
-
+            CounterItem item = listAdapter.getItem(currentCounter);
+            item.setCounterName(data.getStringExtra("counter"));
+            listAdapter.set(currentCounter, item);
         }
 
     }
@@ -172,7 +175,7 @@ public class MainActivity extends ListActivity {
                     for (int i = 0; i < response.length(); i++) {
                         try {
                             JSONObject jObject = response.getJSONObject(i);
-                            listAdapter.add(jObject.getString("counter"));
+                            listAdapter.add(new CounterItem(jObject.getString("counter"),"1".equals(jObject.getString("common"))) );
                         } catch (JSONException e) {
                             Log.e("CC", e.getMessage());
                         }
@@ -185,7 +188,7 @@ public class MainActivity extends ListActivity {
                     listAdapter.clear();
 
                     try {
-                        listAdapter.add(response.getString("counter"));
+                        listAdapter.add(new CounterItem(response.getString("counter"), "1".equals(response.getString("common"))) );
                     } catch (JSONException e) {
                         Log.e("CC", e.getMessage());
                     }
@@ -217,6 +220,14 @@ public class MainActivity extends ListActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         getMenuInflater().inflate(R.menu.menu_counter, menu);
+        MenuItem item = (MenuItem) menu.findItem(R.id.counter_change);
+        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        if (listAdapter.getItem(info.position).isCommon())
+        {
+            item.setTitle("make individual counter");
+        }
+        else
+            item.setTitle("make common counter");
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
@@ -224,9 +235,9 @@ public class MainActivity extends ListActivity {
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.counter_delete){
-            Log.i("CC", "Entererd onContextItemSelected - delete");
+            Log.i("CC", "Entered onContextItemSelected - delete");
             final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            String counter = Utils.checkParameter(listAdapter.getItem(info.position));
+            String counter = Utils.checkParameter(listAdapter.getItem(info.position).getCounterName());
 
             RequestParams params = new RequestParams();
             AsyncHttpClient client = new AsyncHttpClient();
@@ -245,19 +256,33 @@ public class MainActivity extends ListActivity {
 
             });
         }
+        else if (id == R.id.counter_change) {
+            final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+            CounterItem counterItem= listAdapter.getItem(info.position);
+            if (counterItem.isCommon())
+            {
+                Utils.setCounterType(currentPartner1, currentPartner2, Utils.checkParameter(counterItem.getCounterName()),"0");
+                counterItem.setCommon(false);
+            }
+            else
+            {
+                Utils.setCounterType(currentPartner1, currentPartner2, Utils.checkParameter(counterItem.getCounterName()),"1");
+                counterItem.setCommon(true);
+            }
+            listAdapter.set(info.position, counterItem);
+        }
         return super.onContextItemSelected(item);
     }
 
     // load stored counters
     private void loadCounters() {
-
         BufferedReader reader = null;
         try {
             FileInputStream fis = openFileInput(FILE_NAME);
             reader = new BufferedReader(new InputStreamReader(fis));
 
             String counterName = null;
-            Date date = null;
+            boolean counterType = false;
 
             currentPartner1 = reader.readLine();
             if ( currentPartner1== null)
@@ -272,8 +297,8 @@ public class MainActivity extends ListActivity {
                 namePartner1 = reader.readLine();
                 namePartner2 = reader.readLine();
                 while (null != (counterName = reader.readLine())) {
-                    //listAdapter.add(new CounterItem(...));
-                    listAdapter.add(counterName);
+                    counterType = Boolean.parseBoolean(reader.readLine());
+                    listAdapter.add(new CounterItem(counterName, counterType));
                 }
             }
 

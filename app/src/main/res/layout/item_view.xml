@@ -24,4 +24,6 @@
         android:contentDescription="@string/counter_text"
         />
 
+
+
 </LinearLayout>

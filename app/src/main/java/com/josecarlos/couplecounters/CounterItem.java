@@ -4,28 +4,45 @@ import java.util.Date;
 
 /**
  * Created by Jose Carlos on 11/11/2015.
- * We're finally using List of strings instead
  */
 public class CounterItem {
 
-    /*
-    public final static SimpleDateFormat FORMAT = new SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss", Locale.ENGLISH); */
+    public static final String ITEM_SEP = System.getProperty("line.separator");
 
     private String counterName;
-    private Date date = new Date();
+    private boolean common;
 
-    CounterItem(String counterName, Date date) {
+    CounterItem(String counterName, boolean common) {
         this.counterName = counterName;
-        this.date = date;
+        this.common = common;
+    }
+
+    CounterItem(String counterName)
+    {
+        this(counterName, false);
     }
 
     public String getCounterName() {
         return counterName;
     }
 
+    public void setCounterName(String value)
+    {
+        counterName = value;
+    }
 
-    public Date getmDate() {
-        return date;
+    public boolean isCommon() {
+        return common;
+    }
+
+    public void setCommon (boolean value)
+    {
+        common = value;
+    }
+
+
+    public String toString()
+    {
+        return counterName + ITEM_SEP + common;
     }
 }
