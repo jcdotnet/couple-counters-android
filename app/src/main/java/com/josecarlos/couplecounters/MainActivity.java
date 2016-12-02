@@ -284,15 +284,17 @@ public class MainActivity extends ListActivity {
             String counterName = null;
             boolean counterType = false;
 
-            currentPartner1 = reader.readLine();
-            if ( currentPartner1== null)
+            String partner1 = reader.readLine();
+
+            if ( partner1== null)
             {
                 Intent intentLogin = new Intent(MainActivity.this, LoginActivity.class);
                 startActivityForResult(intentLogin, LOGIN_REQUEST);
             }
 
-            else
+            else //if (partner1 == currentPartner1)
             {
+                currentPartner1 = partner1;
                 currentPartner2 = reader.readLine();
                 namePartner1 = reader.readLine();
                 namePartner2 = reader.readLine();
@@ -301,6 +303,7 @@ public class MainActivity extends ListActivity {
                     listAdapter.add(new CounterItem(counterName, counterType));
                 }
             }
+            Log.i("loadCounters", currentPartner1 + " "+ currentPartner2);
 
         } catch (IOException e) {
             Log.e("CC", "Can not read file: " + e.getMessage());
